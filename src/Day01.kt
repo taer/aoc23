@@ -1,15 +1,49 @@
 fun main() {
-    fun part1(input: List<String>): Int {
-        return input.size
+    val digitMap = buildMap {
+        (1..9).forEach {
+            put(it.toString(),it.toString())
+        }
+        putAll(
+            mapOf(
+                "one" to "1",
+                "two" to "2",
+                "three" to "3",
+                "four" to "4",
+                "five" to "5",
+                "six" to "6",
+                "seven" to "7",
+                "eight" to "8",
+                "nine" to "9",
+            )
+        )
     }
 
-    fun part2(input: List<String>): Int {
-        return input.size
+    fun part1(input: List<String>) = input.sumOf {
+        val a = it.first { it.isDigit() }
+        val b = it.last { it.isDigit() }
+        "$a$b".toInt()
     }
+
+    fun part2(input: List<String>) = input.sumOf {
+        val a = digitMap[it.findAnyOf(digitMap.keys)?.second]
+        val b = digitMap[it.findLastAnyOf(digitMap.keys)?.second]
+        "$a$b".toInt()
+    }
+
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day01_test")
-    check(part1(testInput) == 1)
+    check(part1(testInput) == 142)
+    val part2Input = """
+        two1nine
+        eightwothree
+        abcone2threexyz
+        xtwone3four
+        4nineeightseven2
+        zoneight234
+        7pqrstsixteen
+    """.trimIndent().lines()
+    check(part2(part2Input) == 281)
 
     val input = readInput("Day01")
     part1(input).println()
