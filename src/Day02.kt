@@ -67,7 +67,7 @@ fun main() {
                 total[Day02Color.GREEN] = total.getValue(Day02Color.GREEN).coerceAtLeast(green)
                 total[Day02Color.BLUE] = total.getValue(Day02Color.BLUE).coerceAtLeast(blue)
             }
-            total.values.fold(1L){x,y-> x*y}
+            total.values.product()
         }
 
     }
@@ -89,3 +89,4 @@ fun main() {
     part2(input).println()
     check(part2(input) == 71535L)
 }
+

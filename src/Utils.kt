@@ -19,3 +19,19 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  * The cleaner shorthand for printing output.
  */
 fun Any?.println() = println(this)
+
+fun Iterable<Int>.product() = fold(1L){x,y-> x*y}
+
+data class Point(val x: Int, val y: Int) {
+    fun neighbors() =
+        setOf(
+            copy(x = x + 1),
+            copy(x = x - 1),
+            copy(y = y + 1),
+            copy(y = y - 1),
+            copy(x = x - 1, y = y - 1),
+            copy(x = x + 1, y = y + 1),
+            copy(x = x + 1, y = y - 1),
+            copy(x = x - 1, y = y + 1),
+        )
+}
