@@ -1,3 +1,8 @@
+package day01
+
+import println
+import readInput
+
 fun main() {
     val digitMap = buildMap {
         (1..9).forEach {

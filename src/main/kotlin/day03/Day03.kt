@@ -1,20 +1,24 @@
+package day03
+
+import point.Point
+import point.neighbors
+import println
+import product
+import readInput
 import java.lang.RuntimeException
 
 fun main() {
-
-
     class Accumulator {
         private val numbers = mutableListOf<Char>()
         private val surrounds = mutableSetOf<Point>()
         fun isEmpty() = numbers.isEmpty()
         fun getNeighbors() = surrounds.toSet()
         fun addDigit(c: Char, p: Point) {
-            if (c.isDigit()) {
-                numbers.add(c)
-                surrounds.addAll(p.neighbors())
-            } else {
-                throw RuntimeException("$c is not a number")
+            require(c.isDigit()) {
+                "$c is not a digit"
             }
+            numbers.add(c)
+            surrounds.addAll(p.neighbors())
         }
 
         fun number() = numbers.joinToString("").toInt()
@@ -46,11 +50,12 @@ fun main() {
         return accumulatorList.toList() to pointz.toMap()
     }
 
-    fun Char.isSymbol() = !isDigit() && this != '.'
     fun List<Accumulator>.asNumber() = map(Accumulator::number)
 
 
     fun part1(input: List<String>): Int {
+        fun Char.isSymbol() = !isDigit() && this != '.'
+
         val (accumulators, grid) = parse(input)
         val accumulatorsWithSymbols = accumulators.filter { accum ->
             accum.getNeighbors().filter {

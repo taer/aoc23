@@ -1,3 +1,8 @@
+package day02
+
+import println
+import product
+import readInput
 import java.lang.RuntimeException
 
 enum class Day02Color{
@@ -81,7 +86,7 @@ fun main() {
         Day02Color.BLUE to 14,
     )
     check(part1(testInput, sampleTarget) == 8)
-//    check(part2(testInput) == 2286)
+    check(part2(testInput) == 2286L)
 
     val input = readInput("Day02")
     check(part1(input, sampleTarget) == 2720)
