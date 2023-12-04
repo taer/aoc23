@@ -35,19 +35,9 @@ fun main() {
         "$a$b".toInt()
     }
 
-
-    // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day01_test")
     check(part1(testInput) == 142)
-    val part2Input = """
-        two1nine
-        eightwothree
-        abcone2threexyz
-        xtwone3four
-        4nineeightseven2
-        zoneight234
-        7pqrstsixteen
-    """.trimIndent().lines()
+    val part2Input = readInput("Day01_test_part2")
     check(part2(part2Input) == 281)
 
     val input = readInput("Day01")
