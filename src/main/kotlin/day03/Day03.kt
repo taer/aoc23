@@ -5,7 +5,6 @@ import point.neighbors
 import println
 import product
 import readInput
-import java.lang.RuntimeException
 
 fun main() {
     class Accumulator {
