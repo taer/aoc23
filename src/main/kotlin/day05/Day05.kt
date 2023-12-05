@@ -8,24 +8,19 @@ import split
 fun main() {
 
     class MapRow(rowData: List<Long>){
-        val  to = rowData[0] until (rowData[0] + rowData[2])
+        val to = rowData[0] until (rowData[0] + rowData[2])
         val from = rowData[1] until (rowData[1] + rowData[2])
-        fun contains(source: Long): Boolean {
-            return from.contains(source)
-        }
-        fun mapped(source: Long): Long {
+        fun contains(source: Long) = from.contains(source)
+        fun mapFrom(source: Long): Long {
             val distance = source - from.first
             return to.first + distance
         }
     }
 
     class TheMap(val rows: List<MapRow>){
-        fun mapInput(source: Long): Long {
-            return rows.find { it.contains(source) }
-                ?.mapped(source)
-                ?: source
-        }
+        fun mapInput(source: Long) = rows.find { it.contains(source) }?.mapFrom(source) ?: source
     }
+
     fun parse(input:List<String>): Pair<List<Long>, List<TheMap>> {
         val seeds = input.first().substringAfter(":").split(" ").filterNot { it.isEmpty() }.map { it.toLong() }
         val maps = input.asSequence().drop(2).split { it.isBlank() }
