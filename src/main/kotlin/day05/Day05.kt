@@ -4,6 +4,9 @@ import kotlinx.coroutines.*
 import println
 import readInput
 import split
+import kotlin.system.exitProcess
+import kotlin.system.measureTimeMillis
+import kotlin.time.measureTimedValue
 
 fun main() {
 
@@ -50,10 +53,28 @@ fun main() {
     fun part2(input: List<String>): Long {
         val (seeds, theMaps) = parse(input)
 
+        val subdivided = seeds.chunked(2)
+            .map { it[0] until (it[0] + it[1]) }.flatMap { range ->
+                val maxSize = 100_000_000
+                if (range.count() > maxSize) {
+                    val braakTo = range.count()  / maxSize
+                    val extra = if ((range.count()  % maxSize ) == 0) 0 else 1
+                    List(braakTo+extra) {
+                        val start = range.first + (it * maxSize)
+                        val end = if ((start + maxSize) < range.last + 1) start + maxSize else range.last + 1
+                        start until end
+                    }
+                } else {
+                    listOf(range)
+                }
+            }
+        val normal = seeds.chunked(2)
+            .map { it[0] until (it[0] + it[1]) }
+
+
         val partials = runBlocking {
             withContext(Dispatchers.Default) {
-                seeds.chunked(2)
-                    .map { it[0] until (it[0] + it[1]) }
+              subdivided
                     .map {
                         async { mapWalker(it, theMaps) }
                     }.awaitAll()
@@ -69,7 +90,10 @@ fun main() {
 
     val input = readInput("Day05")
     part1(input).println()
-    part2(input).println()
+    val (part2Result, time) = measureTimedValue { part2(input) }
+    println("Took ${time.inWholeMilliseconds}")
+    println("Took $time")
+    part2Result.println()
     check(part1(input) == 331445006L)
-    check(part2(input) == 6472060L)
+    check(part2Result == 6472060L)
 }
