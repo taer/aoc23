@@ -25,3 +25,22 @@ fun Any?.println() = println(this)
 
 fun Iterable<Int>.product() = fold(1L){x,y-> x*y}
 
+fun <T> Sequence<T>.split(predicate: (T) -> Boolean): Sequence<List<T>> {
+    val iterator = this.iterator()
+    val buffer = mutableListOf<T>()
+
+    return sequence {
+        while (iterator.hasNext()) {
+            val element = iterator.next()
+            if (predicate.invoke(element)) {
+                yield(buffer.toList())
+                buffer.clear()
+            } else {
+                buffer.add(element)
+            }
+        }
+        if (buffer.isNotEmpty()) {
+            yield(buffer.toList())
+        }
+    }
+}
