@@ -25,6 +25,9 @@ fun Any?.println() = println(this)
 
 fun Iterable<Int>.product() = fold(1L){x,y-> x*y}
 
+fun String.splitWhiteToInt()= split(" ").filter { it.isNotEmpty() }.map { it.toInt() }
+fun String.splitWhiteToLong()= split(" ").filter { it.isNotEmpty() }.map { it.toLong() }
+
 fun <T> Sequence<T>.split(predicate: (T) -> Boolean): Sequence<List<T>> {
     val iterator = this.iterator()
     val buffer = mutableListOf<T>()
