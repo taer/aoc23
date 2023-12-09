@@ -24,6 +24,7 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 fun Any?.println() = println(this)
 
 fun Iterable<Int>.product() = fold(1L){x,y-> x*y}
+fun Iterable<Long>.productLong() = fold(1L){x,y-> x*y}
 
 fun String.splitWhiteToInt()= split(" ").filter { it.isNotEmpty() }.map { it.toInt() }
 fun String.splitWhiteToLong()= split(" ").filter { it.isNotEmpty() }.map { it.toLong() }
