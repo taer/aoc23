@@ -1,5 +1,6 @@
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.LinkedList
 
 /**
  * Reads lines from the given input txt file.
@@ -51,9 +52,11 @@ fun <T> Sequence<T>.split(predicate: (T) -> Boolean): Sequence<List<T>> {
 
 inline fun <T> Iterable<T>.sumOfIndexed(selector: (index: Int, T) -> Int): Int {
     var index = 0
-    var sum: Int = 0.toInt()
+    var sum = 0
     for (element in this) {
         sum += selector(index++, element)
     }
     return sum
 }
+
+fun <T> List<T>.toLinkedList() = LinkedList(this)

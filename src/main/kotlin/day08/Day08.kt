@@ -9,7 +9,7 @@ fun main() {
     fun  String.repeatAsSeq() = sequence { while (true) yieldAll(this@repeatAsSeq.iterator()) }
 
     fun parse(input: List<String>): Pair<String, Map<String, Pair<String, String>>> {
-        val directions = input.first
+        val directions = input.first()
         val data = input.drop(2).associate {
             val (from, to) = it.split(" = ", limit = 2)
             val (left, right) = to.removeSurrounding("(", ")").split(", ")

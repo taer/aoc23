@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
 }
 
 repositories {
@@ -18,6 +18,9 @@ tasks.withType<Test>().configureEach {
 
 tasks {
     wrapper {
-        gradleVersion = "8.4"
+        gradleVersion = "8.5"
     }
+}
+kotlin {
+    jvmToolchain(21)
 }
