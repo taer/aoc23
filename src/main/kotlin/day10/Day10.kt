@@ -3,35 +3,44 @@ package day10
 import point.*
 import println
 import readInput
+import java.lang.RuntimeException
+import kotlin.time.measureTimedValue
 
 fun main() {
+    fun findPath(
+        startingMap: Map<Point, Char>,
+    ): Pair<MutableList<Point>, Map<Point, Char>> {
+        val start = requireNotNull(startingMap.entries.find { it.value == 'S' }).key
 
-
-    fun loopit(
-        start: Point,
-        xx: Map<Point, Char>,
-    ): MutableList<Point> {
-        val answer = mutableListOf(start)
+        val path = mutableListOf(start)
         val seen = mutableSetOf(start)
         var depth = 0
         var currentPont = start
+        var startDirection: Direction? = null
+        var endDirection: Direction? = null
         while(true){
             val cardinalsWithDir = currentPont.cardinalsWithDir()
-            val xxx = cardinalsWithDir.firstOrNull { (dir, p) ->
-                val (possibles, source) = when (dir) {
+            val xxx = cardinalsWithDir.firstOrNull { (destinationDir, p) ->
+                val (possibles, source) = when (destinationDir) {
                     Direction.S -> setOf('|', 'L', 'J') to setOf('|', '7', 'F','S')
                     Direction.N -> setOf('|', '7', 'F') to setOf('|', 'L', 'J','S')
                     Direction.E -> setOf('-', '7', 'J') to setOf('-', 'L','F','S')
                     Direction.W -> setOf('-', 'F', 'L') to setOf('-','7','J','S')
                 }
-                if(p in xx && !seen.contains(p)){
-                    val valueAtNeighbor = xx.getValue(p)
-                    val currentData = xx.getValue(currentPont)
+                if(startDirection!=null && p == start){
+                    endDirection = destinationDir.reversed()
+                }
+                if(p in startingMap && !seen.contains(p)){
+                    val valueAtNeighbor = startingMap.getValue(p)
+                    val currentData = startingMap.getValue(currentPont)
                     if (possibles.contains(valueAtNeighbor) && source.contains(currentData)) {
+                        if(currentPont==start && startDirection==null){
+                            startDirection = destinationDir
+                        }
                         depth++
                         seen.add(p)
                         currentPont=p
-                        answer.add(p)
+                        path.add(p)
                         true
                     } else {
                         false
@@ -41,76 +50,78 @@ fun main() {
                 }
             }
             if(xxx == null){
-                answer.add(start)
-                return answer
+                path.add(start)
+                val startShouldBe = when(val foo = setOf(startDirection, endDirection)){
+                    setOf(Direction.N, Direction.S) -> '|'
+                    setOf(Direction.E, Direction.W) -> '-'
+                    setOf(Direction.N, Direction.E) -> 'L'
+                    setOf(Direction.N, Direction.W) -> 'J'
+                    setOf(Direction.S, Direction.W) -> '7'
+                    setOf(Direction.S, Direction.E) -> 'F'
+                    else -> throw RuntimeException(foo.toString())
+                }
+                val toMutableMap = startingMap.toMutableMap()
+                toMutableMap[start] = startShouldBe
+                return path to toMutableMap
             }
         }
     }
 
-    fun part1(input: List<String>): Int {
-        val xx = input.flatMapIndexed { x , row ->
+    fun parseInput(input: List<String>): Pair<List<Point>, Map<Point, Char>> {
+        val theMap = input.flatMapIndexed { x, row ->
             row.mapIndexed { y, data ->
-                val p  = point.Point(x,y)
+                val p = Point(x, y)
                 p to data
             }
         }.toMap()
-        val start = requireNotNull( xx.entries.find { it.value=='S' }).key
-
-        val data = loopit(start, xx)
-        val i = data.size / 2
-        return i
+        return findPath(theMap)
     }
 
-    fun part2(input: List<String>): Int {
-        val xx = input.flatMapIndexed { x , row ->
-            row.mapIndexed { y, data ->
-                val p  = point.Point(x,y)
-                p to data
-            }
-        }.toMap().toMutableMap()
-        val start = requireNotNull( xx.entries.find { it.value=='S' }).key
+    fun raytrace(
+        theMap: Map<Point, Char>,
+        path: List<Point>
+    ): Int {
+        val maxX = theMap.keys.maxBy { it.x }.x
+        val maxY = theMap.keys.maxBy { it.y }.y
+        val crossedFJ = "F\\|*J".toRegex()
+        val crossed7L = "7\\|*L".toRegex()
 
-        val path = loopit(start, xx)
-//        xx.forEach {
-//            val onPath = path.contains(it.key)
-//            if(!onPath){
-//                xx[it.key]='.'
-//            }
-//        }
-
-        val maxX = xx.keys.maxBy { it.x }.x
-        val maxY = xx.keys.maxBy { it.y }.y
-        val points = xx.filter { it.key !in path }.keys
-        val potentials = points
-            .asSequence()
+        return theMap.keys.asSequence()
+            .filter { it !in path }
             .filterNot { it.x == 0 }
             .filterNot { it.y == 0 }
             .filterNot { it.x == maxX }
             .filterNot { it.y == maxY }
-            .toList()
-        val insides = potentials
-            .map {
-                var pipescrossed = ""
-                var thePoint = it
-                while(thePoint.x <= maxX) {
-                    if(thePoint in path){
-                        val whereAreWe = xx.getValue(thePoint)
-                        pipescrossed += whereAreWe
+            .map { scanFrom ->
+                val pipescrossed = mutableListOf<Char>()
+                var thePoint = scanFrom
+                while (thePoint.x <= maxX) {
+                    if (thePoint in path) {
+                        val whereAreWe = theMap.getValue(thePoint)
+                        pipescrossed.add(whereAreWe)
                     }
-                    thePoint=thePoint.copy(x=thePoint.x+1)
+                    thePoint = thePoint.copy(x = thePoint.x + 1)
                 }
-                pipescrossed
-            }
-        val regex = "F\\|*J".toRegex()
-        val regex2 = "7\\|*L".toRegex()
-        val filtered = insides.filter {
-            val horizontals = it.count { it == '-' }
-            val findAll = regex.findAll(it).count()
-            val findAll2 = regex2.findAll(it).count()
-            (findAll+findAll2+horizontals) % 2 == 1
-        }
+                pipescrossed.joinToString("")
+            }.filter {
+                val horizontals = it.count { data -> data == '-' }
+                val crossingsFJ = crossedFJ.findAll(it).count()
+                val crossing7L = crossed7L.findAll(it).count()
+                (crossingsFJ + crossing7L + horizontals) % 2 == 1
+            }.count()
 
-        return filtered.size
+    }
+    fun part1(input: List<String>): Int {
+        val (path, _) = parseInput(input)
+        return path.size / 2
+    }
+
+    fun part2(input: List<String>): Int {
+        val (path, theMap) = parseInput(input)
+
+        val (filtered, duration) = measureTimedValue { raytrace(theMap, path) }
+        println("Raytrace took $duration")
+        return filtered
     }
 
 
@@ -166,6 +177,6 @@ fun main() {
     part1(input).println()
     part2(input).println()
     check(part1(input) == 6864)
-    check(part2(input) == 889)
+    check(part2(input) == 349)
 }
 

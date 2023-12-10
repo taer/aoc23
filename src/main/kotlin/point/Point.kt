@@ -22,7 +22,13 @@ fun Point.cardinals() =
     )
 
 enum class Direction{
-    N,S,E,W
+    N,S,E,W;
+    fun reversed() = when(this){
+        N -> S
+        S -> N
+        E -> W
+        W -> E
+    }
 }
 fun Point.cardinalsWithDir() =
     listOf(
