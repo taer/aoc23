@@ -8,6 +8,61 @@ import kotlinx.coroutines.runBlocking
 import println
 import readInput
 
+private fun countInner(springs: String, buckets: List<Int>): Long {
+
+    val emptySpring = springs.trim('.').isEmpty()
+    if(emptySpring){
+        return if(buckets.isEmpty()) 1 else 0
+    }
+
+    val droppedFirstLetter = springs.drop(1)
+    val firstLetter = springs[0]
+    if(firstLetter == '.'){
+        return count(droppedFirstLetter, buckets)
+    }
+    if(firstLetter == '?'){
+        val dotFirst = count(".$droppedFirstLetter", buckets)
+        val hashFirst = count("#$droppedFirstLetter", buckets)
+        return dotFirst + hashFirst
+    }
+    if(firstLetter == '#'){
+        if(buckets.isEmpty())return 0
+        val amount = buckets.first()
+        if(amount > springs.length)
+            return 0
+        val hashes = springs.take(amount).all{ it == '#' || it == '?' }
+        if(hashes){
+            val nextBuckets = buckets.drop(1)
+            if(springs.length==amount){
+                return if(nextBuckets.isEmpty()) 1 else 0
+            }
+            val nextAfterPairing = springs.getOrNull(amount) //next char
+            return if(nextAfterPairing==null && nextBuckets.isEmpty()){
+                1
+            }else if(nextAfterPairing=='#'){
+                0
+            }else if(nextAfterPairing=='?'){
+                count("." + springs.drop(amount+1), nextBuckets)
+            }else{
+                count(springs.drop(amount+1), nextBuckets)
+            }
+        }
+    }
+    return 0
+
+}
+private val cache = mutableMapOf<Pair<String,List<Int>>, Long>()
+private fun count(springs: String, buckets: List<Int>): Long {
+    val cacheKey = springs to buckets
+    val cached = cache[cacheKey]
+    if(cached !=null) {
+        return cached
+    }
+
+    return countInner(springs,buckets).also {
+        cache[cacheKey] = it
+    }
+}
 fun main() {
 
 
@@ -39,55 +94,8 @@ fun main() {
                 matchesBucket(it, buckets)
             }
         }
-
     }
 
-    val cache = mutableMapOf<Pair<String,List<Int>>, Long>()
-    fun count(springs: String, buckets: List<Int>): Long {
-        val cached = cache.get(springs to buckets)
-        if(cached !=null) return cached
-
-        val emptySpring = springs.trim('.').isEmpty()
-        if(emptySpring){
-            return if(buckets.isEmpty()) 1 else 0
-        }
-
-        val droppedFirstLetter = springs.drop(1)
-        val firstLetter = springs[0]
-        if(firstLetter == '.'){
-            return count(droppedFirstLetter, buckets)
-        }
-        if(firstLetter == '?'){
-            val dotFirst = count(".$droppedFirstLetter", buckets)
-            val hashFirst = count("#$droppedFirstLetter", buckets)
-            return dotFirst + hashFirst
-        }
-        if(firstLetter == '#'){
-            if(buckets.isEmpty())return 0
-            val amount = buckets.first()
-            if(amount > springs.length)
-                return 0
-            val hashes = springs.take(amount).all{ it == '#' || it == '?' }
-            if(hashes){
-                val nextBuckets = buckets.drop(1)
-                if(springs.length==amount){
-                    return if(nextBuckets.isEmpty()) 1 else 0
-                }
-                val nextAfterPairing = springs.getOrNull(amount) //next char
-                if(nextAfterPairing==null && nextBuckets.isEmpty()){
-                    return 1
-                }
-                return if(nextAfterPairing=='#'){
-                    0
-                }else{
-                    count(springs.drop(amount+1), nextBuckets)
-                }
-
-            }
-        }
-        return 0
-
-    }
 
     fun doWork2(line: String): Long {
         val (springs, bucketStr ) = line.split(" ", limit = 2)
@@ -107,7 +115,11 @@ fun main() {
     fun part2(input: List<String>): Long {
         return input.sumOf {
             val (a,b) = it.split(" ")
-            val expanded = List(5){a}.joinToString("?") + " " + List(5){b}.joinToString(",")
+            val expanded = buildString {
+                append(List(5) { a }.joinToString("?"))
+                append(" ")
+                append(List(5) { b }.joinToString(","))
+            }
             doWork2(expanded)
         }
     }
@@ -120,6 +132,6 @@ fun main() {
     part1(input).println()
     part2(input).println()
     check(part1(input) == 7169L)
-//    check(part2(input) == 544723432977L)
+    check(part2(input) == 1738259948652L)
 }
 
