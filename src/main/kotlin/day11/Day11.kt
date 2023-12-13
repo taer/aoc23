@@ -1,5 +1,6 @@
 package day11
 
+import makeColumns
 import point.Point
 import println
 import readInput
@@ -17,8 +18,6 @@ fun main() {
     fun distanceFrom(from: Point, to: Point) =
         (from.x - to.x).absoluteValue.toLong() + (from.y - to.y).absoluteValue.toLong()
 
-    fun makeColumns(input: List<String>) =
-        input.first().indices.map { colIdx -> input.map { row -> row[colIdx] } }
 
     fun holeyStars(input: List<String>, multiplier: Int): Long {
         val rowsShift = input.map {
@@ -28,7 +27,7 @@ fun main() {
             rowsShift[i] = rowsShift[i] + rowsShift[i - 1]
         }
 
-        val map = makeColumns(input)
+        val map = input.map { it.toList() }.makeColumns()
         val colShift = map.map {
             if (it.any { it == '#' }) 0 else 1
         }.toMutableList()
@@ -40,8 +39,8 @@ fun main() {
             row.mapIndexedNotNull { y, c ->
                 if (c == '#') {
                     Point(
-                        x = x + rowsShift[x] * (multiplier-1),
-                        y = y + colShift[y] * (multiplier-1)
+                        x = x + rowsShift[x] * (multiplier - 1),
+                        y = y + colShift[y] * (multiplier - 1)
                     )
                 } else {
                     null

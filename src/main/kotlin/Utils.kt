@@ -60,3 +60,6 @@ inline fun <T> Iterable<T>.sumOfIndexed(selector: (index: Int, T) -> Int): Int {
 }
 
 fun <T> List<T>.toLinkedList() = LinkedList(this)
+
+fun <T> List<List<T>>.makeColumns() =
+    first().indices.map { colIdx -> map { row -> row[colIdx] } }
