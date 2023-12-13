@@ -22,18 +22,12 @@ fun main() {
     fun holeyStars(input: List<String>, multiplier: Int): Long {
         val rowsShift = input.map {
             if (it.any { it == '#' }) 0 else 1
-        }.toMutableList()
-        for (i in 1 until rowsShift.size) {
-            rowsShift[i] = rowsShift[i] + rowsShift[i - 1]
-        }
+        }.runningReduce { acc, i -> acc + i }
 
         val map = input.map { it.toList() }.makeColumns()
         val colShift = map.map {
             if (it.any { it == '#' }) 0 else 1
-        }.toMutableList()
-        for (i in 1 until colShift.size) {
-            colShift[i] = colShift[i] + colShift[i - 1]
-        }
+        }.runningReduce { acc, i -> acc + i }
 
         val points = input.flatMapIndexed { x, row ->
             row.mapIndexedNotNull { y, c ->

@@ -54,11 +54,12 @@ fun main() {
         val (originalValue, data) = solvePuzzle(it)
         for (x in it.indices) {
             for (y in it.first().indices) {
-                val newInput = it.toMutableList()
                 val toggle = it[x][y]
                 val newValue = if (toggle == '#') '.' else '#'
                 val chars = it[x].toCharArray()
                 chars[y] = newValue
+
+                val newInput = it.toMutableList()
                 newInput[x] = chars.concatToString()
                 val potential = solvePuzzle(newInput, data)
                 if(potential.first!=0L){
