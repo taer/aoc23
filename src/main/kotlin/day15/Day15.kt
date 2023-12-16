@@ -7,7 +7,7 @@ import java.lang.RuntimeException
 
 fun main() {
 
-    fun String. hashIt(): Int{
+    fun String.hashIt(): Int{
         var result = 0
         forEach {
             result += it.code

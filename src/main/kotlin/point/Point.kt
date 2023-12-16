@@ -13,6 +13,12 @@ fun Point.neighbors() =
         copy(x = x + 1, y = y - 1),
         copy(x = x - 1, y = y + 1),
     )
+fun Point.move(dir: Direction)= when(dir){
+    Direction.N -> copy(x=x-1)
+    Direction.S -> copy(x=x+1)
+    Direction.E -> copy(y=y+1)
+    Direction.W -> copy(y=y-1)
+}
 fun Point.cardinals() =
     setOf(
         copy(x = x + 1),
