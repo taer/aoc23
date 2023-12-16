@@ -1,4 +1,4 @@
-package day13
+package day14
 
 import println
 import readInput
@@ -126,6 +126,6 @@ fun main() {
     part1(input).println()
     part2(input).println()
     check(part1(input) == 109755)
-//    check(part2(input) == 30442L)
+    check(part2(input) == 90928)
 }
 
