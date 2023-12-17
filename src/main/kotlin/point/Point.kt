@@ -1,6 +1,33 @@
 package point
 
-data class Point(val x: Int, val y: Int)
+data class Point(val x: Int, val y: Int) {
+}
+
+fun Point.dirTo(point: Point): Direction {
+    val rowTheSame = this.x == point.x
+    val yTheSame = y == point.y
+
+    require(rowTheSame || yTheSame ){
+        "points must be in a line. $this, $point"
+    }
+    require(this != point){
+        "Same points"
+    }
+    return if(rowTheSame){
+        if(y < point.y){
+            Direction.W
+        }else{
+            Direction.E
+        }
+    }else{
+        if(x < point.x){
+            Direction.N
+        }else{
+            Direction.S
+        }
+
+    }
+}
 
 fun Point.neighbors() =
     setOf(
