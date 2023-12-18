@@ -8,24 +8,24 @@ import kotlin.time.measureTimedValue
 
 fun main() {
     fun findPath(
-        startingMap: Map<Point, Char>,
-    ): Pair<MutableList<Point>, Map<Point, Char>> {
+        startingMap: Map<DeprecatedPoint, Char>,
+    ): Pair<MutableList<DeprecatedPoint>, Map<DeprecatedPoint, Char>> {
         val start = requireNotNull(startingMap.entries.find { it.value == 'S' }).key
 
         val path = mutableListOf(start)
         val seen = mutableSetOf(start)
         var depth = 0
         var currentPont = start
-        var startDirection: Direction? = null
-        var endDirection: Direction? = null
+        var startDirection: DeprecatedDirection? = null
+        var endDirection: DeprecatedDirection? = null
         while(true){
             val cardinalsWithDir = currentPont.cardinalsWithDir()
             val xxx = cardinalsWithDir.firstOrNull { (destinationDir, p) ->
                 val (possibles, source) = when (destinationDir) {
-                    Direction.S -> setOf('|', 'L', 'J') to setOf('|', '7', 'F','S')
-                    Direction.N -> setOf('|', '7', 'F') to setOf('|', 'L', 'J','S')
-                    Direction.E -> setOf('-', '7', 'J') to setOf('-', 'L','F','S')
-                    Direction.W -> setOf('-', 'F', 'L') to setOf('-','7','J','S')
+                    DeprecatedDirection.S -> setOf('|', 'L', 'J') to setOf('|', '7', 'F','S')
+                    DeprecatedDirection.N -> setOf('|', '7', 'F') to setOf('|', 'L', 'J','S')
+                    DeprecatedDirection.E -> setOf('-', '7', 'J') to setOf('-', 'L','F','S')
+                    DeprecatedDirection.W -> setOf('-', 'F', 'L') to setOf('-','7','J','S')
                 }
                 if(startDirection!=null && p == start){
                     endDirection = destinationDir.reversed()
@@ -52,12 +52,12 @@ fun main() {
             if(xxx == null){
                 path.add(start)
                 val startShouldBe = when(val foo = setOf(startDirection, endDirection)){
-                    setOf(Direction.N, Direction.S) -> '|'
-                    setOf(Direction.E, Direction.W) -> '-'
-                    setOf(Direction.N, Direction.E) -> 'L'
-                    setOf(Direction.N, Direction.W) -> 'J'
-                    setOf(Direction.S, Direction.W) -> '7'
-                    setOf(Direction.S, Direction.E) -> 'F'
+                    setOf(DeprecatedDirection.N, DeprecatedDirection.S) -> '|'
+                    setOf(DeprecatedDirection.E, DeprecatedDirection.W) -> '-'
+                    setOf(DeprecatedDirection.N, DeprecatedDirection.E) -> 'L'
+                    setOf(DeprecatedDirection.N, DeprecatedDirection.W) -> 'J'
+                    setOf(DeprecatedDirection.S, DeprecatedDirection.W) -> '7'
+                    setOf(DeprecatedDirection.S, DeprecatedDirection.E) -> 'F'
                     else -> throw RuntimeException(foo.toString())
                 }
                 val toMutableMap = startingMap.toMutableMap()
@@ -67,10 +67,10 @@ fun main() {
         }
     }
 
-    fun parseInput(input: List<String>): Pair<List<Point>, Map<Point, Char>> {
+    fun parseInput(input: List<String>): Pair<List<DeprecatedPoint>, Map<DeprecatedPoint, Char>> {
         val theMap = input.flatMapIndexed { x, row ->
             row.mapIndexed { y, data ->
-                val p = Point(x, y)
+                val p = DeprecatedPoint(x, y)
                 p to data
             }
         }.toMap()
@@ -78,8 +78,8 @@ fun main() {
     }
 
     fun raytrace(
-        theMap: Map<Point, Char>,
-        path: List<Point>
+        theMap: Map<DeprecatedPoint, Char>,
+        path: List<DeprecatedPoint>
     ): Int {
         val maxX = theMap.keys.maxBy { it.x }.x
         val maxY = theMap.keys.maxBy { it.y }.y

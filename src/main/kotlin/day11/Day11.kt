@@ -1,13 +1,13 @@
 package day11
 
 import makeColumns
-import point.Point
+import point.DeprecatedPoint
 import println
 import readInput
 import kotlin.math.absoluteValue
 
 fun main() {
-    fun makePairs(arr: List<Point>): Sequence<Pair<Point, Point>> = sequence {
+    fun makePairs(arr: List<DeprecatedPoint>): Sequence<Pair<DeprecatedPoint, DeprecatedPoint>> = sequence {
         for(i in 0 until arr.size-1) {
             for(j in i+1 until arr.size) {
                 yield(arr[i] to arr[j])
@@ -15,7 +15,7 @@ fun main() {
         }
     }
 
-    fun distanceFrom(from: Point, to: Point) =
+    fun distanceFrom(from: DeprecatedPoint, to: DeprecatedPoint) =
         (from.x - to.x).absoluteValue.toLong() + (from.y - to.y).absoluteValue.toLong()
 
 
@@ -32,7 +32,7 @@ fun main() {
         val points = input.flatMapIndexed { x, row ->
             row.mapIndexedNotNull { y, c ->
                 if (c == '#') {
-                    Point(
+                    DeprecatedPoint(
                         x = x + rowsShift[x] * (multiplier - 1),
                         y = y + colShift[y] * (multiplier - 1)
                     )

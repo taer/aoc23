@@ -1,9 +1,9 @@
 package point
 
-data class Point(val x: Int, val y: Int) {
+data class DeprecatedPoint(val x: Int, val y: Int) {
 }
 
-fun Point.dirTo(point: Point): Direction {
+fun DeprecatedPoint.dirTo(point: DeprecatedPoint): DeprecatedDirection {
     val rowTheSame = this.x == point.x
     val yTheSame = y == point.y
 
@@ -15,21 +15,21 @@ fun Point.dirTo(point: Point): Direction {
     }
     return if(rowTheSame){
         if(y < point.y){
-            Direction.W
+            DeprecatedDirection.W
         }else{
-            Direction.E
+            DeprecatedDirection.E
         }
     }else{
         if(x < point.x){
-            Direction.N
+            DeprecatedDirection.N
         }else{
-            Direction.S
+            DeprecatedDirection.S
         }
 
     }
 }
 
-fun Point.neighbors() =
+fun DeprecatedPoint.neighbors() =
     setOf(
         copy(x = x + 1),
         copy(x = x - 1),
@@ -40,13 +40,13 @@ fun Point.neighbors() =
         copy(x = x + 1, y = y - 1),
         copy(x = x - 1, y = y + 1),
     )
-fun Point.move(dir: Direction)= when(dir){
-    Direction.N -> copy(x=x-1)
-    Direction.S -> copy(x=x+1)
-    Direction.E -> copy(y=y+1)
-    Direction.W -> copy(y=y-1)
+fun DeprecatedPoint.move(dir: DeprecatedDirection)= when(dir){
+    DeprecatedDirection.N -> copy(x=x-1)
+    DeprecatedDirection.S -> copy(x=x+1)
+    DeprecatedDirection.E -> copy(y=y+1)
+    DeprecatedDirection.W -> copy(y=y-1)
 }
-fun Point.cardinals() =
+fun DeprecatedPoint.cardinals() =
     setOf(
         copy(x = x + 1),
         copy(x = x - 1),
@@ -54,7 +54,7 @@ fun Point.cardinals() =
         copy(y = y - 1),
     )
 
-enum class Direction{
+enum class DeprecatedDirection{
     N,S,E,W;
     fun reversed() = when(this){
         N -> S
@@ -63,11 +63,11 @@ enum class Direction{
         W -> E
     }
 }
-fun Point.cardinalsWithDir() =
+fun DeprecatedPoint.cardinalsWithDir() =
     listOf(
-        Direction.S to copy(x = x + 1),
-        Direction.N to copy(x = x - 1),
-        Direction.E to copy(y = y + 1),
-        Direction.W to copy(y = y - 1),
+        DeprecatedDirection.S to copy(x = x + 1),
+        DeprecatedDirection.N to copy(x = x - 1),
+        DeprecatedDirection.E to copy(y = y + 1),
+        DeprecatedDirection.W to copy(y = y - 1),
     )
 

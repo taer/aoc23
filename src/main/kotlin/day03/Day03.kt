@@ -1,6 +1,6 @@
 package day03
 
-import point.Point
+import point.DeprecatedPoint
 import point.neighbors
 import println
 import product
@@ -9,10 +9,10 @@ import readInput
 fun main() {
     class Accumulator {
         private val numbers = mutableListOf<Char>()
-        private val surrounds = mutableSetOf<Point>()
+        private val surrounds = mutableSetOf<DeprecatedPoint>()
         fun isEmpty() = numbers.isEmpty()
         fun getNeighbors() = surrounds.toSet()
-        fun addDigit(c: Char, p: Point) {
+        fun addDigit(c: Char, p: DeprecatedPoint) {
             require(c.isDigit()) {
                 "$c is not a digit"
             }
@@ -23,13 +23,13 @@ fun main() {
         fun number() = numbers.joinToString("").toInt()
     }
 
-    fun parse(input: List<String>): Pair<List<Accumulator>, Map<Point, Char>> {
-        val pointz = mutableMapOf<Point, Char>()
+    fun parse(input: List<String>): Pair<List<Accumulator>, Map<DeprecatedPoint, Char>> {
+        val pointz = mutableMapOf<DeprecatedPoint, Char>()
         var accumulator = Accumulator()
         val accumulatorList = mutableListOf<Accumulator>()
         input.forEachIndexed { x, row ->
             row.forEachIndexed { y, char ->
-                val p = Point(x, y)
+                val p = DeprecatedPoint(x, y)
                 pointz[p] = char
 
                 if (char.isDigit()) {
@@ -71,7 +71,7 @@ fun main() {
         val (accumulators, grid) = parse(input)
 
         fun Char.isGear() = this == '*'
-        fun List<Accumulator>.nextToPoint(p: Point) = filter { it.getNeighbors().contains(p) }
+        fun List<Accumulator>.nextToPoint(p: DeprecatedPoint) = filter { it.getNeighbors().contains(p) }
 
         val gearRatios = grid
             .filter { it.value.isGear() }

@@ -1,7 +1,7 @@
 package day16
 
-import point.Direction
-import point.Point
+import point.DeprecatedDirection
+import point.DeprecatedPoint
 import point.move
 import println
 import readInput
@@ -9,16 +9,16 @@ import java.util.*
 
 fun main() {
 
-    data class State(val point: Point, val movingTowards: Direction)
+    data class State(val point: DeprecatedPoint, val movingTowards: DeprecatedDirection)
 
-    fun State.makeMove(dir: Direction? = null) = (dir ?: this.movingTowards).let {
+    fun State.makeMove(dir: DeprecatedDirection? = null) = (dir ?: this.movingTowards).let {
         copy(
             movingTowards = it,
             point = point.move(it)
         )
     }
 
-    fun List<List<Char>>.inMap(point: Point) =
+    fun List<List<Char>>.inMap(point: DeprecatedPoint) =
         (point.x >= 0 && point.y >= 0 && point.x < size && point.y < first().size)
 
 
@@ -49,42 +49,42 @@ fun main() {
 
                 '/' -> {
                     val newDir = when (currentState.movingTowards) {
-                        Direction.N -> Direction.E
-                        Direction.S -> Direction.W
-                        Direction.E -> Direction.N
-                        Direction.W -> Direction.S
+                        DeprecatedDirection.N -> DeprecatedDirection.E
+                        DeprecatedDirection.S -> DeprecatedDirection.W
+                        DeprecatedDirection.E -> DeprecatedDirection.N
+                        DeprecatedDirection.W -> DeprecatedDirection.S
                     }
                     queue.add(currentState.makeMove(newDir))
                 }
 
                 '\\' -> {
                     val newDir = when (currentState.movingTowards) {
-                        Direction.N -> Direction.W
-                        Direction.S -> Direction.E
-                        Direction.E -> Direction.S
-                        Direction.W -> Direction.N
+                        DeprecatedDirection.N -> DeprecatedDirection.W
+                        DeprecatedDirection.S -> DeprecatedDirection.E
+                        DeprecatedDirection.E -> DeprecatedDirection.S
+                        DeprecatedDirection.W -> DeprecatedDirection.N
                     }
                     queue.add(currentState.makeMove(newDir))
                 }
 
                 '|' -> {
                     when (currentState.movingTowards) {
-                        Direction.N, Direction.S -> queue.add(currentState.makeMove())
+                        DeprecatedDirection.N, DeprecatedDirection.S -> queue.add(currentState.makeMove())
 
-                        Direction.E, Direction.W -> {
-                            queue.add(currentState.makeMove(Direction.N))
-                            queue.add(currentState.makeMove(Direction.S))
+                        DeprecatedDirection.E, DeprecatedDirection.W -> {
+                            queue.add(currentState.makeMove(DeprecatedDirection.N))
+                            queue.add(currentState.makeMove(DeprecatedDirection.S))
                         }
                     }
                 }
 
                 '-' -> {
                     when (currentState.movingTowards) {
-                        Direction.E, Direction.W -> queue.add(currentState.makeMove())
+                        DeprecatedDirection.E, DeprecatedDirection.W -> queue.add(currentState.makeMove())
 
-                        Direction.N, Direction.S -> {
-                            queue.add(currentState.makeMove(Direction.E))
-                            queue.add(currentState.makeMove(Direction.W))
+                        DeprecatedDirection.N, DeprecatedDirection.S -> {
+                            queue.add(currentState.makeMove(DeprecatedDirection.E))
+                            queue.add(currentState.makeMove(DeprecatedDirection.W))
                         }
                     }
                 }
@@ -97,7 +97,7 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         val map = input.map { it.toList() }
-        val start = State(Point(0, 0), Direction.E)
+        val start = State(DeprecatedPoint(0, 0), DeprecatedDirection.E)
         val colors = doMoves(start, map)
 //        println()
 //        state.colors.forEach {
@@ -111,15 +111,15 @@ fun main() {
         val map = input.map { it.toList() }
         val startNS = (map.first().indices).flatMap {
             listOf(
-                State(Point(0, it), Direction.S),
-                State(Point(map.size - 1, it), Direction.N),
+                State(DeprecatedPoint(0, it), DeprecatedDirection.S),
+                State(DeprecatedPoint(map.size - 1, it), DeprecatedDirection.N),
             )
         }
 
         val startEW = map.indices.flatMap {
             listOf(
-                State(Point(it, 0), Direction.E),
-                State(Point(it, map.first().size - 1), Direction.W),
+                State(DeprecatedPoint(it, 0), DeprecatedDirection.E),
+                State(DeprecatedPoint(it, map.first().size - 1), DeprecatedDirection.W),
             )
         }
         val total = startEW + startNS
