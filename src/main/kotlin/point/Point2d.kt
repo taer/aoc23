@@ -3,6 +3,7 @@ package point
 data class Point2d(val x: Int, val y: Int) {
 
     operator fun plus(other: Point2d) = Point2d(x + other.x, y + other.y)
+    operator fun times(scale:Int) = Point2d(x * scale, y * scale)
 
     companion object {
         val N = Point2d(0, -1)
