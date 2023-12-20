@@ -23,13 +23,48 @@ fun main() {
         return b
     }
 
-    fun moveCart(heats: List<List<Int>>, start: Point2d, end: Point2d): Int {
+    fun moveCart(heats: List<List<Int>>, start: Point2d, end: Point2d, minMove: Int = 1, poo: (State, Point2d) -> Boolean): Int {
         val seen  = mutableSetOf<State>()
         val work = PriorityQueue<Work>(compareBy { it.heatloss })
+        val startState = State(start, Point2d.E, 0)
+        work.add(Work(startState, 0))
+        seen.add(startState)
+        val ways =  mapOf(
+            Point2d.N to Point2d.cardinals-Point2d.S,
+            Point2d.S to Point2d.cardinals-Point2d.N,
+            Point2d.E to Point2d.cardinals-Point2d.W,
+            Point2d.W to Point2d.cardinals-Point2d.E,
+            )
 
         while(work.isNotEmpty()){
             val (current, heatloss) = work.poll()
-            if(current.location == end) return heatloss
+            if(current.location == end)
+                return heatloss
+
+            val value = ways.getValue(current.directon)
+            val map = value
+                .map { current.moveTowards(it) }
+            val filter = map
+                .filter {
+                    val inside = heats.isInside(it.location)
+                    inside
+                }
+            filter
+                .filter {
+                    val poo1 = poo(it, current.directon)
+                    poo1
+                }
+                .filter {
+                    val b = it !in seen
+                    b
+                }
+                .forEach {
+                    val element = Work(it, heatloss + heats[it.location.y][it.location.x])
+                    seen.add(it)
+                    work.add(element)
+
+                }
+
 
 
 
@@ -42,33 +77,34 @@ fun main() {
         val heats = input.map { it.map { it.digitToInt() } }
         val start = Point2d(0,0)
         val end = Point2d(heats.first().lastIndex, heats.lastIndex)
-        return moveCart(heats, start, end)
+        return moveCart(heats, start, end) { it,_ -> it.distanceSoFar <= 3 }
     }
 
     fun part2(input: List<String>): Int {
-        return 0
+        val heats = input.map { it.map { it.digitToInt() } }
+        val start = Point2d(0,0)
+        val end = Point2d(heats.first().lastIndex, heats.lastIndex)
+        return moveCart(heats, start, end, 4) { it,lastDir ->
+            if(it.distanceSoFar <= 4){
+                lastDir == it.directon
+            }else if(it.distanceSoFar>=9){
+                lastDir != it.directon
+            }else
+                true
+        }
     }
 
-    val simpleText = """
-        112999
-        911111
-    """.trimIndent()
-    val part1a = part1(simpleText.lines())
-    check(part1a == 7) {
-        part1a
-    }
-
-    val testInput = readInput("Day18_test")
+    val testInput = readInput("Day17_test")
     val part1 = part1(testInput)
     check(part1 == 102) {
         part1
     }
-//    check(part2(testInput) == 51)
+    check(part2(testInput) == 94)
 
-    val input = readInput("Day18")
+    val input = readInput("Day17")
     part1(input).println()
     part2(input).println()
-    check(part1(input) == 8901)
+    check(part1(input) == 1138)
     check(part2(input) == 9064)
 }
 
