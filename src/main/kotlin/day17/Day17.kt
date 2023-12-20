@@ -38,22 +38,22 @@ fun main() {
 
         while(work.isNotEmpty()){
             val (current, heatloss) = work.poll()
-            if(current.location == end)
+            if(current.location == end && current.distanceSoFar>=minMove)
                 return heatloss
 
             val value = ways.getValue(current.directon)
             val map = value
-                .map { current.moveTowards(it) }
             val filter = map
                 .filter {
-                    val inside = heats.isInside(it.location)
+                    val inside = heats.isInside(current.location+ it)
                     inside
                 }
             filter
                 .filter {
-                    val poo1 = poo(it, current.directon)
+                    val poo1 = poo(current, it)
                     poo1
                 }
+                .map { current.moveTowards(it) }
                 .filter {
                     val b = it !in seen
                     b
@@ -77,18 +77,18 @@ fun main() {
         val heats = input.map { it.map { it.digitToInt() } }
         val start = Point2d(0,0)
         val end = Point2d(heats.first().lastIndex, heats.lastIndex)
-        return moveCart(heats, start, end) { it,_ -> it.distanceSoFar <= 3 }
+        return moveCart(heats, start, end) { it,newDir -> it.distanceSoFar < 3 ||it.directon!=newDir}
     }
 
     fun part2(input: List<String>): Int {
         val heats = input.map { it.map { it.digitToInt() } }
         val start = Point2d(0,0)
         val end = Point2d(heats.first().lastIndex, heats.lastIndex)
-        return moveCart(heats, start, end, 4) { it,lastDir ->
-            if(it.distanceSoFar <= 4){
-                lastDir == it.directon
-            }else if(it.distanceSoFar>=9){
-                lastDir != it.directon
+        return moveCart(heats, start, end, 4) { it,newDir ->
+            if(it.distanceSoFar < 4){
+                newDir == it.directon
+            }else if(it.distanceSoFar>9){
+                newDir != it.directon
             }else
                 true
         }
