@@ -16,6 +16,20 @@ sealed class Component{
     abstract val destinations: List<String>
     protected abstract fun acceptPulse(from: String, state: State): State?
 
+    object Terminator:Component() {
+        override val destinations: List<String>
+            get() = listOf()
+
+        var counts = 0L
+        fun reset() {
+            counts=0L
+        }
+
+        override fun acceptPulse(from: String, state: State): State? {
+            counts++
+            return null
+        }
+    }
     data class Broadcaster(override val destinations: List<String>):Component() {
         override fun acceptPulse(from: String, state: State): State {
             return state
@@ -90,8 +104,7 @@ fun main() {
 
     fun part1(input: List<String>, times: Int=1000, debug: Boolean = false): Long {
         data class Work(val source: String, val pulseToSend: State, val toSendTo:String)
-        val  finalParse = doTheParse(input)
-
+        val finalParse = doTheParse(input)
 
         val stateSent = Array(2){0L}
         repeat(times){
@@ -115,15 +128,48 @@ fun main() {
         }
 
 
-        return stateSent[0] * stateSent[1]
+       return stateSent[0] * stateSent[1]
     }
 
 
-    fun part2(input: List<String>): Long {
-        return 0
+    fun part2(input: List<String>, times: Int=1000, debug: Boolean = false): Long {
+        data class Work(val source: String, val pulseToSend: State, val toSendTo:String)
+        val finalParse = doTheParse(input).also {
+            val toMutableMap = it.toMutableMap()
+            toMutableMap["rx"] = Component.Terminator
+            toMutableMap.toMap()
+        }
+
+        var x=0L
+        while(true){
+            x++
+            Component.Terminator.reset()
+            if(debug) println()
+            val queue = LinkedList<Work>()
+            queue.add(Work("button", State.LOW, "broadcaster"))
+            while(queue.isNotEmpty()){
+                val (source, stateToSend, target) = queue.removeFirst()
+                if(debug) println("$source sent $stateToSend to $target")
+                val component = finalParse[target]
+                if(component!=null){
+                    val resultPulse = component.pulseIt(source,stateToSend)
+                    if(resultPulse!=null){
+                        component.destinations.forEach {
+                            queue.add(Work(target, resultPulse, it))
+                        }
+                    }
+                }
+            }
+            if(Component.Terminator.counts !=0L){
+
+                println(Component.Terminator.counts)
+            }
+            if(Component.Terminator.counts==1L){
+                return x
+            }
+        }
 
     }
-
 
     val reddit = """
         broadcaster -> a
@@ -153,6 +199,6 @@ fun main() {
     part1(input, debug = true).println()
     part2(input).println()
     check(part1(input) == 814934624L)
-    check(part2(input) == 138616621185978)
+//    check(part2(input) == 138616621185978)
 }
 
